@@ -1,12 +1,20 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref } from "vue";
+
+defineProps({
+    multiline: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
+});
 
 const model = defineModel<string>({ required: true });
 
 const input = ref<HTMLInputElement | null>(null);
 
 onMounted(() => {
-    if (input.value?.hasAttribute('autofocus')) {
+    if (input.value?.hasAttribute("autofocus")) {
         input.value?.focus();
     }
 });
@@ -15,9 +23,12 @@ defineExpose({ focus: () => input.value?.focus() });
 </script>
 
 <template>
-    <input
-        class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        v-model="model"
-        ref="input"
-    />
+    <textarea class="v-input" v-model="model" ref="input" v-if="multiline" />
+    <input class="v-input" v-model="model" ref="input" v-else />
 </template>
+
+<style scoped>
+.v-input {
+    @apply rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500;
+}
+</style>
