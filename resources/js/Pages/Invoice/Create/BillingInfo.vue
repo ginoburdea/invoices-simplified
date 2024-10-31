@@ -19,8 +19,8 @@ const useLastBillingInfo = () => {
 </script>
 
 <template>
-    <div class="flex gap-4">
-        <div class="w-full">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
             <div class="mb-2">
                 <InputLabel for="vendor" value="Vendor" />
                 <TextInput
@@ -41,7 +41,7 @@ const useLastBillingInfo = () => {
                 Load from last invoice
             </a>
         </div>
-        <div class="w-full">
+        <div>
             <InputLabel for="customer" value="Customer" />
             <TextInput
                 id="customer"
