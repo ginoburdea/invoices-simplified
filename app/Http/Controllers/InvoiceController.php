@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class InvoiceController extends Controller
@@ -12,7 +13,8 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        //
+        Gate::authorize('viewAny', Invoice::class);
+        return Inertia::render('Invoice/List', []);
     }
 
     /**
