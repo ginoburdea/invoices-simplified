@@ -54,7 +54,7 @@ class InvoiceController extends Controller
         $formatted_invoices = array_map(
             fn($invoice) => [
                  ...$invoice,
-                 'customer' => str_replace(["\r\n", "\n"], ", ", $invoice['customer']),
+                'customer' => str_replace(["\r\n", "\n"], ", ", $invoice['customer']),
             ],
             $invoices->toArray()
         );
@@ -159,6 +159,14 @@ class InvoiceController extends Controller
     public function show(string $id)
     {
         return Inertia::render('Invoice/ViewById', []);
+    }
+
+    /**
+     * Download the invoice
+     */
+    public function download(string $id)
+    {
+        return response()->json('file...');
     }
 
     /**

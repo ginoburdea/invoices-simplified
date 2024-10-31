@@ -13,10 +13,6 @@ interface Props {
 }
 
 defineProps<Props>();
-
-const genViewInvoiceUrl = (invoiceId: number) => {
-    return route("invoices.show", { invoice: invoiceId });
-};
 </script>
 
 <template>
@@ -35,8 +31,16 @@ const genViewInvoiceUrl = (invoiceId: number) => {
                 <td class="w-full">{{ invoice.customer }}</td>
                 <td>{{ invoice.total }}</td>
                 <td class="space-x-4 text-nowrap">
-                    <a class="v-link">Download</a>
-                    <Link :href="genViewInvoiceUrl(invoice.id)" class="v-link">
+                    <Link
+                        :href="route('invoices.download', invoice.id)"
+                        class="v-link"
+                    >
+                        Download
+                    </Link>
+                    <Link
+                        :href="route('invoices.show', invoice.id)"
+                        class="v-link"
+                    >
                         View
                     </Link>
                 </td>
