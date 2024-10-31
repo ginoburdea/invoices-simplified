@@ -23,7 +23,12 @@ class InvoiceController extends Controller
     public function create(Request $request)
     {
         Gate::authorize('create', Invoice::class);
-        return Inertia::render('Invoice/Create', []);
+
+        $last_invoice = $request->user()->invoices()->latest()->first();
+
+        return Inertia::render('Invoice/Create', [
+            'last_vendor_info' => isset($last_invoice) ? $last_invoice['vendor'] : null,
+        ]);
     }
 
     protected function calculateInvoiceTotal(int $invoice_id)

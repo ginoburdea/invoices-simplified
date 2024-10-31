@@ -9,6 +9,13 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import { onBeforeMount } from "vue";
 
+const props = defineProps({
+    last_vendor_info: {
+        type: String,
+        required: false,
+    },
+});
+
 interface Product {
     name: string;
     price: number;
@@ -49,6 +56,10 @@ const rowHasError = (errors: Record<string, string>, rowIndex: number) => {
 
     return false;
 };
+
+const useLastBillingInfo = () => {
+    form.vendor = props.last_vendor_info || "";
+};
 </script>
 
 <template>
@@ -83,7 +94,13 @@ const rowHasError = (errors: Record<string, string>, rowIndex: number) => {
                                     :message="form.errors.vendor"
                                 />
                             </div>
-                            <a class="v-link text-sm">Load from last invoice</a>
+                            <a
+                                class="v-link text-sm"
+                                v-if="last_vendor_info"
+                                @click="useLastBillingInfo"
+                            >
+                                Load from last invoice
+                            </a>
                         </div>
                         <div class="w-full">
                             <InputLabel for="customer" value="Customer" />
