@@ -16,37 +16,39 @@ defineProps<Props>();
 </script>
 
 <template>
-    <table class="mb-6 v-table">
-        <thead>
-            <tr>
-                <th>Number</th>
-                <th>Customer</th>
-                <th>Total</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="invoice of invoices" :key="invoice.id">
-                <td>{{ invoice.number }}</td>
-                <td class="w-full">{{ invoice.customer }}</td>
-                <td>{{ invoice.total }}</td>
-                <td class="space-x-4 text-nowrap">
-                    <Link
-                        :href="route('invoices.download', invoice.id)"
-                        class="v-link"
-                    >
-                        Download
-                    </Link>
-                    <Link
-                        :href="route('invoices.show', invoice.id)"
-                        class="v-link"
-                    >
-                        View
-                    </Link>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="overflow-auto mb-6">
+        <table class="v-table w-full">
+            <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Customer</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="invoice of invoices" :key="invoice.id">
+                    <td>{{ invoice.number }}</td>
+                    <td class="w-full">{{ invoice.customer }}</td>
+                    <td>{{ invoice.total }}</td>
+                    <td class="space-x-4 text-nowrap">
+                        <Link
+                            :href="route('invoices.download', invoice.id)"
+                            class="v-link"
+                        >
+                            Download
+                        </Link>
+                        <Link
+                            :href="route('invoices.show', invoice.id)"
+                            class="v-link"
+                        >
+                            View
+                        </Link>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </template>
 
 <style scoped>
