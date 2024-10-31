@@ -111,35 +111,39 @@ const selectedSortLabel = sortOptions.filter(
                 </div>
             </div>
 
-            <table class="mb-6 v-table">
-                <thead>
-                    <tr>
-                        <th>Number</th>
-                        <th>Customer</th>
-                        <th>Total</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="invoice of invoices">
-                        <td>{{ invoice.number }}</td>
-                        <td class="w-full">{{ invoice.customer }}</td>
-                        <td>{{ invoice.total }}</td>
-                        <td class="space-x-4">
-                            <a class="v-link">Download</a>
-                            <a class="v-link">View</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <p class="text-center text-sm">
-                <SafeLink :href="prev_page_url" class="v-link"> Prev </SafeLink>
-
-                <span class="mx-5">Page {{ page }}</span>
-
-                <SafeLink :href="next_page_url" class="v-link"> Next </SafeLink>
-            </p>
+            <template v-if="invoices.length > 0">
+                <table class="mb-6 v-table">
+                    <thead>
+                        <tr>
+                            <th>Number</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="invoice of invoices">
+                            <td>{{ invoice.number }}</td>
+                            <td class="w-full">{{ invoice.customer }}</td>
+                            <td>{{ invoice.total }}</td>
+                            <td class="space-x-4">
+                                <a class="v-link">Download</a>
+                                <a class="v-link">View</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="text-center text-sm">
+                    <SafeLink :href="prev_page_url" class="v-link">
+                        Prev
+                    </SafeLink>
+                    <span class="mx-5">Page {{ page }}</span>
+                    <SafeLink :href="next_page_url" class="v-link">
+                        Next
+                    </SafeLink>
+                </p>
+            </template>
+            <p class="text-center">No invoices found</p>
         </div>
     </AuthenticatedLayout>
 </template>

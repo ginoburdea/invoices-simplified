@@ -11,7 +11,7 @@
 }
 
 .v-card {
-    @apply bg-white p-4 shadow rounded-lg sm:p-8;
+    @apply bg-white p-4 shadow rounded-lg sm:p-8 overflow-visible;
 }
 
 .v-input {
