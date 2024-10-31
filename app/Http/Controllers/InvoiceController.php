@@ -88,7 +88,7 @@ class InvoiceController extends Controller
             $next_page_url = $request->fullUrlWithQuery([ ...$data, 'page' => $data['page'] + 1]);
         }
 
-        return Inertia::render('Invoice/List', [
+        return Inertia::render('Invoice/List/Index', [
             'invoices' => $formatted_invoices,
             'prev_page_url' => $prev_page_url,
             'next_page_url' => $next_page_url,
