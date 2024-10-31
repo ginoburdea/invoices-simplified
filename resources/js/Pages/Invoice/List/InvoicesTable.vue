@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Link } from "@inertiajs/vue3";
+
 interface Invoice {
     id: number;
     number: number;
@@ -11,6 +13,10 @@ interface Props {
 }
 
 defineProps<Props>();
+
+const genViewInvoiceUrl = (invoiceId: number) => {
+    return route("invoices.show", { invoice: invoiceId });
+};
 </script>
 
 <template>
@@ -28,9 +34,11 @@ defineProps<Props>();
                 <td>{{ invoice.number }}</td>
                 <td class="w-full">{{ invoice.customer }}</td>
                 <td>{{ invoice.total }}</td>
-                <td class="space-x-4">
+                <td class="space-x-4 text-nowrap">
                     <a class="v-link">Download</a>
-                    <a class="v-link">View</a>
+                    <Link :href="genViewInvoiceUrl(invoice.id)" class="v-link">
+                        View
+                    </Link>
                 </td>
             </tr>
         </tbody>

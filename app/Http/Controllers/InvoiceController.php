@@ -158,7 +158,7 @@ class InvoiceController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return Inertia::render('Invoice/ViewById', []);
     }
 
     /**
