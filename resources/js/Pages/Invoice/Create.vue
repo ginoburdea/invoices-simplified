@@ -25,19 +25,29 @@ const addProduct = () => {
     form.products.push({
         name: "",
         price: 0,
-        quantity: 0,
+        quantity: 1,
     });
 };
 
 onBeforeMount(addProduct);
 
 const genProductName = (index: number, field: string) => {
-    return `product.${index}.${field}`;
+    return `products.${index}.${field}`;
 };
 
 const removeProduct = (index: number) => {
     form.products.splice(index, 1);
     if (form.products.length === 0) addProduct();
+};
+
+const rowHasError = (errors: Record<string, string>, rowIndex: number) => {
+    for (const field in errors) {
+        const regex = new RegExp("^products\." + rowIndex + "\..+$");
+
+        if (field.match(regex)) return true;
+    }
+
+    return false;
 };
 </script>
 
@@ -51,7 +61,7 @@ const removeProduct = (index: number) => {
             </h1>
 
             <form
-                @submit.prevent="form.patch(route('profile.update'))"
+                @submit.prevent="form.post(route('invoices.store'))"
                 class="mt-6 space-y-6"
             >
                 <div>
@@ -109,14 +119,6 @@ const removeProduct = (index: number) => {
                                     v-model="product.name"
                                     required
                                 />
-                                <!-- <InputError
-                                        class="mt-2"
-                                        :message="
-                                            form.errors[
-                                                genProductName(index, 'name')
-                                            ].message
-                                        "
-                                    /> -->
                             </div>
                             <div class="w-1/5">
                                 <InputLabel
@@ -130,14 +132,6 @@ const removeProduct = (index: number) => {
                                     v-model="product.price"
                                     required
                                 />
-                                <!-- <InputError
-                                        class="mt-2"
-                                        :message="
-                                            form.errors[
-                                                genProductName(index, 'price')
-                                            ].message
-                                        "
-                                    /> -->
                             </div>
                             <div class="w-1/5">
                                 <InputLabel
@@ -151,16 +145,47 @@ const removeProduct = (index: number) => {
                                     v-model="product.quantity"
                                     required
                                 />
-                                <!-- <InputError
-                                        class="mt-2"
-                                        :message="
-                                            form.errors[
-                                                genProductName(index, 'quantity')
-                                            ].message
-                                        "
-                                    /> -->
                             </div>
                             <XButton @click="removeProduct(index)"></XButton>
+                        </div>
+                        <div
+                            class="flex gap-2 mb-2"
+                            v-if="rowHasError(form.errors, index)"
+                        >
+                            <div class="w-4/5">
+                                <InputError
+                                    class="mt-2"
+                                    :message="
+                                        form.errors[
+                                            genProductName(index, 'name')
+                                        ]
+                                    "
+                                />
+                            </div>
+                            <div class="w-1/5">
+                                <InputError
+                                    class="mt-2"
+                                    :message="
+                                        form.errors[
+                                            genProductName(index, 'price')
+                                        ]
+                                    "
+                                />
+                            </div>
+                            <div class="w-1/5">
+                                <InputError
+                                    class="mt-2"
+                                    :message="
+                                        form.errors[
+                                            genProductName(index, 'quantity')
+                                        ]
+                                    "
+                                />
+                            </div>
+                            <XButton
+                                class="invisible"
+                                @click="removeProduct(index)"
+                            ></XButton>
                         </div>
                     </div>
                 </div>
