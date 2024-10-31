@@ -2,21 +2,97 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
-use Inertia\Inertia;
 use App\Models\Invoice;
 use App\Models\Product;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class InvoiceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         Gate::authorize('viewAny', Invoice::class);
-        return Inertia::render('Invoice/List', []);
+
+        $data = $request->validate([
+            'page' => ['sometimes', 'integer', 'min:1', 'max:1000'],
+            'sortField' => ['sometimes', Rule::in(['number', 'total'])],
+            'sortType' => ['sometimes', Rule::in(['asc', 'desc'])],
+        ]);
+
+        $default_data = [
+            'page' => 1,
+            'sortField' => 'number',
+            'sortType' => 'desc',
+        ];
+
+        $keys = ['page', 'sortField', 'sortType'];
+
+        // If the data contains defaults, then add the default and redirect
+        $data_with_defaults = [];
+        foreach ($keys as $key) {
+            $data_with_defaults[$key] = $data[$key] ?? $default_data[$key];
+        }
+        if ($data_with_defaults !== $data) {
+            return redirect()->to($request->fullUrlWithQuery($data_with_defaults));
+        }
+
+        $page_size = 2;
+        $invoices = $request
+            ->user()
+            ->invoices()
+            ->select(['id', 'number', 'customer', 'total'])
+            ->orderBy($data['sortField'], $data['sortType'])
+            ->offset(($data['page'] - 1) * $page_size)
+            ->limit($page_size)
+            ->get();
+
+        $formatted_invoices = array_map(
+            fn($invoice) => [
+                 ...$invoice,
+                 'customer' => str_replace(["\r\n", "\n"], ", ", $invoice['customer']),
+            ],
+            $invoices->toArray()
+        );
+
+        $prev_invoice = null;
+        if ($data['page'] > 1) {
+            $prev_invoice = $request
+                ->user()
+                ->invoices()
+                ->select(['id'])
+                ->orderBy($data['sortField'], $data['sortType'])
+                ->offset(($data['page'] - 1) * $page_size - 1)
+                ->first();
+        }
+
+        $next_invoice = $request
+            ->user()
+            ->invoices()
+            ->select(['id'])
+            ->orderBy($data['sortField'], $data['sortType'])
+            ->offset($data['page'] * $page_size)
+            ->first();
+
+        $prev_page_url = null;
+        if (isset($prev_invoice)) {
+            $prev_page_url = $request->fullUrlWithQuery([ ...$data, 'page' => $data['page'] - 1]);
+        }
+
+        $next_page_url = null;
+        if (isset($next_invoice)) {
+            $next_page_url = $request->fullUrlWithQuery([ ...$data, 'page' => $data['page'] + 1]);
+        }
+
+        return Inertia::render('Invoice/List', [
+            'invoices' => $formatted_invoices,
+            'prev_page_url' => $prev_page_url,
+            'next_page_url' => $next_page_url,
+        ]);
     }
 
     /**
