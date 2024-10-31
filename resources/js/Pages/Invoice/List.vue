@@ -1,51 +1,68 @@
 <script setup lang="ts">
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
+import SafeLink from "@/Components/SafeLink.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { computed, ref } from "vue";
 
-interface Invoice {
-    id: number;
-    number: number;
-    client: string;
-    total: number;
-}
+defineProps({
+    invoices: {
+        type: Array,
+        required: true,
+    },
+    prev_page_url: {
+        type: String,
+        required: false,
+    },
+    next_page_url: {
+        type: String,
+        required: false,
+    },
+});
 
-const invoices: Invoice[] = [
-    { id: 1, number: 1, client: "Client 1", total: 100 },
-    { id: 2, number: 2, client: "Client 2", total: 200 },
-    { id: 3, number: 3, client: "Client 3", total: 300 },
-    { id: 4, number: 4, client: "Client 4", total: 400 },
-    { id: 5, number: 5, client: "Client 5", total: 500 },
-];
+const page = new URLSearchParams(window.location.search).get("page");
 
-const hasPrevPage = false;
-const page = 1;
-const hasNextPage = true;
+const getUrlWithSortOptions = (sortField: string, sortType: string) => {
+    const params = new URLSearchParams();
+    params.append("page", "1");
+    params.append("sortField", sortField);
+    params.append("sortType", sortType);
+    return window.location.pathname + "?" + params.toString();
+};
 
 const sortOptions = [
     {
         label: "Latest",
-        value: "number:desc",
+        url: getUrlWithSortOptions("number", "desc"),
+        sortField: "number",
+        sortType: "desc",
     },
     {
         label: "Oldest",
-        value: "number:asc",
+        url: getUrlWithSortOptions("number", "asc"),
+        sortField: "number",
+        sortType: "asc",
     },
     {
         label: "Highest total",
-        value: "total:desc",
+        url: getUrlWithSortOptions("total", "desc"),
+        sortField: "total",
+        sortType: "desc",
     },
     {
         label: "Lowest total",
-        value: "total:asc",
+        url: getUrlWithSortOptions("total", "asc"),
+        sortField: "total",
+        sortType: "asc",
     },
 ];
 
-const sort = ref<string>(sortOptions[0].value);
-const selectedSortLabel = computed(
-    () => sortOptions.filter((option) => option.value === sort.value)[0].label
-);
+const sortField = new URLSearchParams(window.location.search).get("sortField");
+const sortType = new URLSearchParams(window.location.search).get("sortType");
+
+const selectedSortLabel = sortOptions.filter(
+    (option) => option.sortField === sortField && option.sortType === sortType
+)[0].label;
 </script>
 
 <template>
@@ -84,8 +101,8 @@ const selectedSortLabel = computed(
                         <template #content>
                             <DropdownLink
                                 v-for="option of sortOptions"
-                                @click="sort = option.value"
-                                :key="option.value"
+                                :href="option.url"
+                                :key="option.label"
                             >
                                 {{ option.label }}
                             </DropdownLink>
@@ -98,7 +115,7 @@ const selectedSortLabel = computed(
                 <thead>
                     <tr>
                         <th>Number</th>
-                        <th>Client</th>
+                        <th>Customer</th>
                         <th>Total</th>
                         <th>Actions</th>
                     </tr>
@@ -106,7 +123,7 @@ const selectedSortLabel = computed(
                 <tbody>
                     <tr v-for="invoice of invoices">
                         <td>{{ invoice.number }}</td>
-                        <td class="w-full">{{ invoice.client }}</td>
+                        <td class="w-full">{{ invoice.customer }}</td>
                         <td>{{ invoice.total }}</td>
                         <td class="space-x-4">
                             <a class="v-link">Download</a>
@@ -117,13 +134,11 @@ const selectedSortLabel = computed(
             </table>
 
             <p class="text-center text-sm">
-                <a class="v-link" :class="{ 'v-link--disabled': !hasPrevPage }">
-                    Prev</a
-                >
+                <SafeLink :href="prev_page_url" class="v-link"> Prev </SafeLink>
+
                 <span class="mx-5">Page {{ page }}</span>
-                <a class="v-link" :class="{ 'v-link--disabled': !hasNextPage }">
-                    Next</a
-                >
+
+                <SafeLink :href="next_page_url" class="v-link"> Next </SafeLink>
             </p>
         </div>
     </AuthenticatedLayout>
