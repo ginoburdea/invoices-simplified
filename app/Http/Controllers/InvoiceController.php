@@ -28,7 +28,7 @@ class InvoiceController extends Controller
 
         $last_invoice = $request->user()->invoices()->latest()->first();
 
-        return Inertia::render('Invoice/Create', [
+        return Inertia::render('Invoice/Create/Index', [
             'last_vendor_info' => isset($last_invoice) ? $last_invoice['vendor'] : null,
         ]);
     }
