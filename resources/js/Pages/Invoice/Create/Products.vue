@@ -39,45 +39,54 @@ const rowHasError = (errors: Record<string, string>, rowIndex: number) => {
 </script>
 
 <template>
-    <div v-for="(product, index) of products">
-        <div class="flex gap-2 items-end mb-2">
-            <div class="w-4/5">
-                <InputLabel :for="genProductName(index, 'name')" value="Name" />
-                <TextInput
-                    :id="genProductName(index, 'name')"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="product.name"
-                    required
-                />
+    <div v-for="(product, index) of products" class="mb-8 md:mb-4">
+        <div class="flex gap-2 items-start mb-2">
+            <div class="w-full grid grid-cols-10 gap-2">
+                <div class="col-span-10 md:col-span-6">
+                    <InputLabel
+                        :for="genProductName(index, 'name')"
+                        value="Name"
+                    />
+                    <TextInput
+                        :id="genProductName(index, 'name')"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="product.name"
+                        required
+                    />
+                </div>
+                <div class="col-span-5 md:col-span-2">
+                    <InputLabel
+                        :for="genProductName(index, 'price')"
+                        value="Price"
+                    />
+                    <TextInput
+                        :id="genProductName(index, 'price')"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="product.price"
+                        required
+                    />
+                </div>
+                <div class="col-span-5 md:col-span-2">
+                    <InputLabel
+                        :for="genProductName(index, 'quantity')"
+                        value="Quantity"
+                    />
+                    <TextInput
+                        :id="genProductName(index, 'quantity')"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="product.quantity"
+                        required
+                    />
+                </div>
             </div>
-            <div class="w-1/5">
-                <InputLabel
-                    :for="genProductName(index, 'price')"
-                    value="Price"
-                />
-                <TextInput
-                    :id="genProductName(index, 'price')"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="product.price"
-                    required
-                />
+
+            <div>
+                <InputLabel value="." class="invisible mb-1" />
+                <XButton @click="removeProduct(index)"></XButton>
             </div>
-            <div class="w-1/5">
-                <InputLabel
-                    :for="genProductName(index, 'quantity')"
-                    value="Quantity"
-                />
-                <TextInput
-                    :id="genProductName(index, 'quantity')"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="product.quantity"
-                    required
-                />
-            </div>
-            <XButton @click="removeProduct(index)"></XButton>
         </div>
         <div class="flex gap-2 mb-2" v-if="rowHasError(props.errors, index)">
             <div class="w-4/5">
