@@ -17,3 +17,8 @@
 .v-input {
     @apply rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2;
 }
+
+.v-icon-button {
+    @apply p-2 hover:bg-gray-50 border border-transparent transition-all h-fit w-fit rounded text-gray-800;
+}
+

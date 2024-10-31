@@ -2,7 +2,7 @@
 
 <template>
     <button
-        class="p-2 hover:bg-gray-50 border border-transparent transition-all h-fit w-fit rounded text-gray-800"
+        class="v-icon-button"
     >
         <svg
             width="24"
