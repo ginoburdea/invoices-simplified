@@ -31,12 +31,13 @@ class InvoiceController extends Controller
             'sortType' => 'desc',
         ];
 
+        $keys_exceptions = ['query'];
         $keys = ['query', 'page', 'sortField', 'sortType'];
 
         // If the data contains defaults, then add the default and redirect
         $data_with_defaults = [];
         foreach ($keys as $key) {
-            if (!isset($data[$key])) {
+            if (!isset($data[$key]) && in_array($key, $keys_exceptions)) {
                 continue;
             }
 
