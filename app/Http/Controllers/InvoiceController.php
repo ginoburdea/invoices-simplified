@@ -20,8 +20,9 @@ class InvoiceController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
+        Gate::authorize('create', Invoice::class);
         return Inertia::render('Invoice/Create', []);
     }
 
