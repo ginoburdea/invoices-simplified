@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-    <h1>Invoices</h1>
+    <h1>Invoice</h1>
 </template>
 
 <style></style>

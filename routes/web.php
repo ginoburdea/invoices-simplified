@@ -25,6 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::resource('invoices', InvoiceController::class)->only(['index', 'create', 'store'])->middleware(['auth', 'verified']);
+Route::resource('invoices', InvoiceController::class)->only(['index', 'create', 'store', 'show'])->middleware(['auth', 'verified']);
+
+Route::middleware(['auth', 'verified'])->name('invoices.')->prefix('/invoices')->group(function () {
+    Route::get('/download/{invoice}', [InvoiceController::class, 'download'])->name('download');
+});
 
 require __DIR__ . '/auth.php';
