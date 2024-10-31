@@ -4,14 +4,14 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Link } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 import { ref } from "vue";
 
 const getUrlWithSortOptions = (sortField: string, sortType: string) => {
-    const params = new URLSearchParams();
-    params.append("page", "1");
-    params.append("sortField", sortField);
-    params.append("sortType", sortType);
+    const params = new URLSearchParams(window.location.search);
+    params.set("page", "1");
+    params.set("sortField", sortField);
+    params.set("sortType", sortType);
     return window.location.pathname + "?" + params.toString();
 };
 
@@ -74,18 +74,21 @@ const searchTextError = ref("");
     <div class="mb-6 flex flex-col md:flex-row justify-between gap-6">
         <div>
             <InputLabel for="search" value="Search" />
-            <div class="flex gap-2 flex-row">
+            <form
+                class="flex gap-2 flex-row"
+                @submit.prevent="
+                    router.visit(getUrlWithSearchQuery(searchText))
+                "
+            >
                 <TextInput
                     id="search"
                     type="text"
                     class="mt-1 block w-full"
                     v-model="searchText"
                     placeholder="Number or client"
+                    :autofocus="!!initialSearchText"
                 />
-                <Link
-                    :href="getUrlWithSearchQuery(searchText)"
-                    class="v-icon-button mt-1"
-                >
+                <button type="submit" class="v-icon-button mt-1">
                     <svg
                         width="24"
                         height="24"
@@ -100,8 +103,8 @@ const searchTextError = ref("");
                             fill="currentColor"
                         />
                     </svg>
-                </Link>
-            </div>
+                </button>
+            </form>
             <InputError class="mt-2" :message="searchTextError" />
         </div>
         <div>
