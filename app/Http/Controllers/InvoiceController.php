@@ -29,7 +29,6 @@ class InvoiceController extends Controller
     protected function calculateInvoiceTotal(int $invoice_id)
     {
         $products = Product::where('invoice_id', $invoice_id)->get();
-        // error_log(json_encode($products));
 
         $total = 0;
         foreach ($products as $product) {
@@ -61,14 +60,11 @@ class InvoiceController extends Controller
             'customer' => $data['customer'],
             'total' => 0,
         ];
-        // error_log(json_encode($invoice_data));
         $invoice = $request->user()->invoices()->create($invoice_data);
-        // error_log(json_encode($invoice));
 
         $invoice->products()->createMany($data['products']);
 
         $invoice['total'] = $this->calculateInvoiceTotal($invoice['id']);
-        // error_log($invoice['total']);
         $invoice->save();
 
         return redirect()->route('invoices.index');
