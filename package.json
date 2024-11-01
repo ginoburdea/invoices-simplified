@@ -6,6 +6,7 @@
         "frontend:build": "vue-tsc && vite build",
         "frontend:dev": "vite",
         "backend:dev": "php artisan serve",
+        "backend:build": "php artisan optimize",
         "queue:dev": "php artisan queue:work"
     },
     "devDependencies": {
