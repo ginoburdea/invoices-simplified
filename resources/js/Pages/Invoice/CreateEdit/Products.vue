@@ -4,13 +4,7 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 
-interface Product {
-    name: string;
-    price: number;
-    quantity: number;
-}
-
-const products = defineModel<Product[]>({ required: true });
+const products = defineModel<InvoiceProduct[]>({ required: true });
 const emit = defineEmits(["addProduct"]);
 
 interface Props {

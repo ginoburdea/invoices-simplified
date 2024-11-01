@@ -24,6 +24,14 @@ class InvoicePolicy
     }
 
     /**
+     * Determine whether the user can download the invoice.
+     */
+    public function download(User $user, Invoice $invoice): bool
+    {
+        return $invoice->user()->is($user);
+    }
+
+    /**
      * Determine whether the user can create models.
      */
     public function create(User $user): bool
@@ -36,7 +44,15 @@ class InvoicePolicy
      */
     public function update(User $user, Invoice $invoice): bool
     {
-        return false;
+        return $invoice->user()->is($user);
+    }
+
+    /**
+     * Determine whether the user can access the edit invoice page
+     */
+    public function edit(): bool
+    {
+        return true;
     }
 
     /**
