@@ -29,8 +29,6 @@ const form = useForm({
 });
 
 onBeforeMount(() => {
-    console.log(props);
-
     if (props.action === "update") {
         form.vendor = props.invoice.vendor;
         form.customer = props.invoice.customer;
