@@ -48,6 +48,14 @@ class InvoicePolicy
     }
 
     /**
+     * Determine whether the user can access the edit invoice page
+     */
+    public function edit(): bool
+    {
+        return true;
+    }
+
+    /**
      * Determine whether the user can delete the model.
      */
     public function delete(User $user, Invoice $invoice): bool

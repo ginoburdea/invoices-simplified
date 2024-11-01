@@ -185,7 +185,7 @@ class InvoiceController extends Controller
      */
     public function show(string $id)
     {
-        return Inertia::render('Invoice/ViewById', []);
+        //
     }
 
     /**
@@ -352,9 +352,17 @@ class InvoiceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Request $request, Invoice $invoice)
     {
-        //
+        Gate::authorize('edit', Invoice::class);
+
+        $products = $invoice->products()->get();
+
+        return Inertia::render('Invoice/CreateEdit/Index', [
+            'action' => 'update',
+            'invoice' => $invoice,
+            'invoice_products' => $products,
+        ]);
     }
 
     /**
