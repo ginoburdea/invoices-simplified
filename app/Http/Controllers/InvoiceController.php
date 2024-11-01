@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\DeleteTempInvoice;
 use App\Models\Invoice;
 use App\Models\Product;
 use Fpdf\Fpdf;
@@ -336,10 +337,12 @@ class InvoiceController extends Controller
         }
 
         // Save the PDF
-        $pdf_path = env('TEMP_INVOICE_FOLDER') . '/' . floor(microtime(true) * 1000) . '.pdf';
+        $file_name_on_disk = floor(microtime(true) * 1000) . '.pdf';
+        $pdf_path = env('TEMP_INVOICE_FOLDER') . '/' . $file_name_on_disk;
         error_log(json_encode($pdf_path));
         $pdf->Output('F', $pdf_path);
-        // TODO: Schedule a job to remove the file after a few seconds
+
+        DeleteTempInvoice::dispatch($file_name_on_disk)->delay(now()->addMinutes(1));
 
         // Return the PDF
         $pdf_name = 'Invoice ' . $invoice['number'] . '.pdf';
