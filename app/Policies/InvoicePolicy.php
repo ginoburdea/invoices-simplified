@@ -16,6 +16,14 @@ class InvoicePolicy
     }
 
     /**
+     * Determine whether the user can view status about own invoices.
+     */
+    public function index_stats(User $user): bool
+    {
+        return true;
+    }
+
+    /**
      * Determine whether the user can view the model.
      */
     public function view(User $user, Invoice $invoice): bool

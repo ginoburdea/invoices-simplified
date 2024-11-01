@@ -24,6 +24,56 @@ class InvoiceController extends Controller
     ];
 
     /**
+     * Display the stats / dashboard page
+     */
+    public function index_stats(Request $request)
+    {
+        error_log('hello world');
+        Gate::authorize('index_stats', Invoice::class);
+
+        $data = $request->validate([
+            'time_frame' => ['sometimes', Rule::in(['last_3_days', 'last_7_days', 'last_14_days'])],
+            'group_by' => ['sometimes', Rule::in(['hour', 'day', 'week'])],
+        ]);
+
+        $default_data = [
+            'time_frame' => 'last_14_days',
+            'group_by' => 'day',
+        ];
+
+        $keys_exceptions = [];
+        $keys = ['time_frame', 'group_by'];
+
+        // If the data contains defaults, then add the default and redirect
+        $data_with_defaults = [];
+        foreach ($keys as $key) {
+            if (!isset($data[$key]) && in_array($key, $keys_exceptions)) {
+                continue;
+            }
+
+            $data_with_defaults[$key] = $data[$key] ?? $default_data[$key];
+        }
+        if ($data_with_defaults !== $data) {
+            return redirect()->to($request->fullUrlWithQuery($data_with_defaults));
+        }
+
+        return Inertia::render('Dashboard', [
+            'sales' => [
+                ['start_date' => now()->addDays(-9), 'end_date' => now()->addDays(-9 - 1), 'value' => 100],
+                ['start_date' => now()->addDays(-8), 'end_date' => now()->addDays(-8 - 1), 'value' => 200],
+                ['start_date' => now()->addDays(-7), 'end_date' => now()->addDays(-7 - 1), 'value' => 150],
+                ['start_date' => now()->addDays(-6), 'end_date' => now()->addDays(-6 - 1), 'value' => 250],
+                ['start_date' => now()->addDays(-5), 'end_date' => now()->addDays(-5 - 1), 'value' => 280],
+                ['start_date' => now()->addDays(-4), 'end_date' => now()->addDays(-4 - 1), 'value' => 130],
+                ['start_date' => now()->addDays(-3), 'end_date' => now()->addDays(-3 - 1), 'value' => 120],
+                ['start_date' => now()->addDays(-2), 'end_date' => now()->addDays(-2 - 1), 'value' => 180],
+                ['start_date' => now()->addDays(-1), 'end_date' => now()->addDays(-1 - 1), 'value' => 210],
+            ],
+        ]);
+
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
@@ -158,7 +208,8 @@ class InvoiceController extends Controller
         return $total;
     }
 
-    private function add_products_to_invoice(Invoice $invoice, $products) {
+    private function add_products_to_invoice(Invoice $invoice, $products)
+    {
         $invoice->products()->createMany($products);
         $invoice['total'] = $this->calculateInvoiceTotal($invoice['id']);
         $invoice->save();
@@ -378,7 +429,7 @@ class InvoiceController extends Controller
 
         $data = $request->validate($this->invoice_validators);
 
-        foreach(['vendor', 'customer'] as $invoice_field) {
+        foreach (['vendor', 'customer'] as $invoice_field) {
             $invoice[$invoice_field] = $data[$invoice_field];
         }
         $invoice->save();
