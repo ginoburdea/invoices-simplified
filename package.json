@@ -2,8 +2,11 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vue-tsc && vite build",
-        "dev": "vite"
+        "dev": "concurrently npm:*:dev --prefixColors yellow,blue,green",
+        "frontend:build": "vue-tsc && vite build",
+        "frontend:dev": "vite",
+        "backend:dev": "php artisan serve",
+        "queue:dev": "php artisan queue:work"
     },
     "devDependencies": {
         "@inertiajs/vue3": "^1.0.0",
