@@ -32,12 +32,12 @@ defineProps<Props>();
                     <td class="w-full">{{ invoice.customer }}</td>
                     <td>{{ invoice.total }}</td>
                     <td class="space-x-4 text-nowrap">
-                        <Link
+                        <a
                             :href="route('invoices.download', invoice.id)"
                             class="v-link"
                         >
                             Download
-                        </Link>
+                        </a>
                         <Link
                             :href="route('invoices.show', invoice.id)"
                             class="v-link"

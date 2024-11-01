@@ -24,6 +24,14 @@ class InvoicePolicy
     }
 
     /**
+     * Determine whether the user can download the invoice.
+     */
+    public function download(User $user, Invoice $invoice): bool
+    {
+        return $invoice->user()->is($user);
+    }
+
+    /**
      * Determine whether the user can create models.
      */
     public function create(User $user): bool
