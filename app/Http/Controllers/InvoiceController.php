@@ -130,8 +130,9 @@ class InvoiceController extends Controller
 
         $last_invoice = $request->user()->invoices()->latest()->first();
 
-        return Inertia::render('Invoice/Create/Index', [
+        return Inertia::render('Invoice/CreateEdit/Index', [
             'last_vendor_info' => isset($last_invoice) ? $last_invoice['vendor'] : null,
+            'action' => 'create',
         ]);
     }
 
@@ -210,7 +211,6 @@ class InvoiceController extends Controller
         // 1. Title
         $pdf->Cell(0, 0, 'INVOICE', 0, 0, 'C');
         $pdf->Ln(10);
-
 
         // 2. Subtitle
         $pdf->SetFont('Arial', '', 10);
