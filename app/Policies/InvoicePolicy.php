@@ -44,7 +44,7 @@ class InvoicePolicy
      */
     public function update(User $user, Invoice $invoice): bool
     {
-        return false;
+        return $invoice->user()->is($user);
     }
 
     /**
