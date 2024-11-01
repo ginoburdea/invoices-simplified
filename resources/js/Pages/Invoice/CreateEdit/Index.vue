@@ -3,27 +3,46 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, useForm } from "@inertiajs/vue3";
-import { onBeforeMount } from "vue";
+import { computed, onBeforeMount } from "vue";
 import Products from "./Products.vue";
 import BillingInfo from "./BillingInfo.vue";
 
-const props = defineProps({
-    last_vendor_info: {
-        type: String,
-        required: false,
-    },
-});
-
-interface Product {
-    name: string;
-    price: number;
-    quantity: number;
+interface CreateProps {
+    action: "create";
+    last_vendor_info?: string;
 }
+
+interface UpdateProps {
+    action: "update";
+    invoice: Invoice;
+    invoice_products: InvoiceProduct[];
+}
+
+type Props = CreateProps | UpdateProps;
+
+const props = defineProps<Props>();
 
 const form = useForm({
     vendor: "",
     customer: "",
-    products: [] as Product[],
+    products: [] as InvoiceProduct[],
+});
+
+onBeforeMount(() => {
+    if (props.action === "update") {
+        form.vendor = props.invoice.vendor;
+        form.customer = props.invoice.customer;
+
+        form.products = props.invoice_products.map((product) => ({
+            name: product.name,
+            price: product.price,
+            quantity: product.quantity,
+        }));
+
+        return;
+    }
+
+    addProduct();
 });
 
 const addProduct = () => {
@@ -34,23 +53,29 @@ const addProduct = () => {
     });
 };
 
-onBeforeMount(addProduct);
+const title = computed(() =>
+    props.action === "create"
+        ? "Create invoice"
+        : `Invoice ${props.invoice.number}`
+);
+const submitFormFn = computed(() =>
+    props.action === "create"
+        ? () => form.post(route("invoices.store"))
+        : () => form.patch(route("invoices.update", props.invoice.id))
+);
 </script>
 
 <template>
-    <Head title="Create invoice" />
+    <Head :title="title" />
 
     <AuthenticatedLayout>
         <template #header>
             <h1 class="text-xl font-semibold leading-tight text-gray-800">
-                Create invoice
+                {{ title }}
             </h1>
         </template>
 
-        <form
-            @submit.prevent="form.post(route('invoices.store'))"
-            class="space-y-8 v-card"
-        >
+        <form @submit.prevent="submitFormFn" class="space-y-8 v-card">
             <div>
                 <h2 class="font-bold text-lg mb-2">Billing info</h2>
                 <BillingInfo

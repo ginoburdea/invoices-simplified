@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Invoice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
-use App\Models\Invoice;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Product extends Model
@@ -23,6 +22,13 @@ class Product extends Model
         'price',
         'quantity',
         'invoice_id',
+    ];
+
+    protected $visible = [
+        'id',
+        'name',
+        'price',
+        'quantity',
     ];
 
     public function invoice(): BelongsTo

@@ -1,13 +1,6 @@
 <script setup lang="ts">
 import { Link } from "@inertiajs/vue3";
 
-interface Invoice {
-    id: number;
-    number: number;
-    customer: string;
-    total: number;
-}
-
 interface Props {
     invoices: Invoice[];
 }
@@ -39,7 +32,7 @@ defineProps<Props>();
                             Download
                         </a>
                         <Link
-                            :href="route('invoices.show', invoice.id)"
+                            :href="route('invoices.edit', invoice.id)"
                             class="v-link"
                         >
                             View

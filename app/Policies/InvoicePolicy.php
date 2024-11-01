@@ -44,7 +44,15 @@ class InvoicePolicy
      */
     public function update(User $user, Invoice $invoice): bool
     {
-        return false;
+        return $invoice->user()->is($user);
+    }
+
+    /**
+     * Determine whether the user can access the edit invoice page
+     */
+    public function edit(): bool
+    {
+        return true;
     }
 
     /**

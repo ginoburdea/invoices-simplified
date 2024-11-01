@@ -13,6 +13,16 @@ use Inertia\Inertia;
 
 class InvoiceController extends Controller
 {
+    private $invoice_validators = [
+        'vendor' => ['required', 'string', 'min:4', 'max:500'],
+        'customer' => ['required', 'string', 'min:4', 'max:500'],
+
+        'products' => ['required', 'array', 'min:1', 'max:25'],
+        'products.*.name' => ['required', 'string', 'min:4', 'max:100'],
+        'products.*.price' => ['required', 'decimal:0,2', 'min:0.01', 'max:1000'],
+        'products.*.quantity' => ['required', 'integer', 'min:1', 'max:1000'],
+    ];
+
     /**
      * Display a listing of the resource.
      */
@@ -130,8 +140,9 @@ class InvoiceController extends Controller
 
         $last_invoice = $request->user()->invoices()->latest()->first();
 
-        return Inertia::render('Invoice/Create/Index', [
+        return Inertia::render('Invoice/CreateEdit/Index', [
             'last_vendor_info' => isset($last_invoice) ? $last_invoice['vendor'] : null,
+            'action' => 'create',
         ]);
     }
 
@@ -147,6 +158,12 @@ class InvoiceController extends Controller
         return $total;
     }
 
+    private function add_products_to_invoice(Invoice $invoice, $products) {
+        $invoice->products()->createMany($products);
+        $invoice['total'] = $this->calculateInvoiceTotal($invoice['id']);
+        $invoice->save();
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -154,15 +171,7 @@ class InvoiceController extends Controller
     {
         Gate::authorize('create', Invoice::class);
 
-        $data = $request->validate([
-            'vendor' => ['required', 'string', 'min:4', 'max:500'],
-            'customer' => ['required', 'string', 'min:4', 'max:500'],
-
-            'products' => ['required', 'array', 'min:1', 'max:25'],
-            'products.*.name' => ['required', 'string', 'min:4', 'max:100'],
-            'products.*.price' => ['required', 'decimal:0,2', 'min:0.01', 'max:1000'],
-            'products.*.quantity' => ['required', 'integer', 'min:1', 'max:1000'],
-        ]);
+        $data = $request->validate($this->invoice_validators);
 
         $invoice_data = [
             'vendor' => $data['vendor'],
@@ -170,11 +179,7 @@ class InvoiceController extends Controller
             'total' => 0,
         ];
         $invoice = $request->user()->invoices()->create($invoice_data);
-
-        $invoice->products()->createMany($data['products']);
-
-        $invoice['total'] = $this->calculateInvoiceTotal($invoice['id']);
-        $invoice->save();
+        $this->add_products_to_invoice($invoice, $data['products']);
 
         return redirect()->route('invoices.index');
     }
@@ -184,7 +189,7 @@ class InvoiceController extends Controller
      */
     public function show(string $id)
     {
-        return Inertia::render('Invoice/ViewById', []);
+        //
     }
 
     /**
@@ -210,7 +215,6 @@ class InvoiceController extends Controller
         // 1. Title
         $pdf->Cell(0, 0, 'INVOICE', 0, 0, 'C');
         $pdf->Ln(10);
-
 
         // 2. Subtitle
         $pdf->SetFont('Arial', '', 10);
@@ -352,17 +356,38 @@ class InvoiceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Request $request, Invoice $invoice)
     {
-        //
+        Gate::authorize('edit', Invoice::class);
+
+        $products = $invoice->products()->get();
+
+        return Inertia::render('Invoice/CreateEdit/Index', [
+            'action' => 'update',
+            'invoice' => $invoice,
+            'invoice_products' => $products,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Invoice $invoice)
     {
-        //
+        Gate::authorize('update', $invoice);
+
+        $data = $request->validate($this->invoice_validators);
+
+        foreach(['vendor', 'customer'] as $invoice_field) {
+            $invoice[$invoice_field] = $data[$invoice_field];
+        }
+        $invoice->save();
+
+        // Delete current products and create new ones
+        $invoice->products()->delete();
+        $this->add_products_to_invoice($invoice, $data['products']);
+
+        return redirect()->route('invoices.index');
     }
 
     /**
