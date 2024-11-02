@@ -3,7 +3,7 @@ import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
+import InputField from "@/Components/InputField.vue";
 import { router } from "@inertiajs/vue3";
 import { ref } from "vue";
 
@@ -80,7 +80,7 @@ const searchTextError = ref("");
                     router.visit(getUrlWithSearchQuery(searchText))
                 "
             >
-                <TextInput
+                <InputField
                     id="search"
                     type="text"
                     class="mt-1 block w-full"

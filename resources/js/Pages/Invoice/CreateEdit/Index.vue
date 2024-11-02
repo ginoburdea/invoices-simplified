@@ -6,6 +6,7 @@ import { Head, useForm } from "@inertiajs/vue3";
 import { computed, onBeforeMount } from "vue";
 import Products from "./Products.vue";
 import BillingInfo from "./BillingInfo.vue";
+import { Invoice, InvoiceProduct } from "@/types/index.js";
 
 interface CreateProps {
     action: "create";
@@ -16,6 +17,7 @@ interface UpdateProps {
     action: "update";
     invoice: Invoice;
     invoice_products: InvoiceProduct[];
+    last_vendor_info: undefined;
 }
 
 type Props = CreateProps | UpdateProps;
