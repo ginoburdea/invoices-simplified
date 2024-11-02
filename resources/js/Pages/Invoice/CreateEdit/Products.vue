@@ -2,7 +2,7 @@
 import XButton from "@/Components/XButton.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
+import InputField from "@/Components/InputField.vue";
 import { InvoiceProduct } from "@/types/index.js";
 
 const products = defineModel<InvoiceProduct[]>({ required: true });
@@ -42,7 +42,7 @@ const rowHasError = (errors: Record<string, string>, rowIndex: number) => {
                         :for="genProductName(index, 'name')"
                         value="Name"
                     />
-                    <TextInput
+                    <InputField
                         :id="genProductName(index, 'name')"
                         type="text"
                         class="mt-1 block w-full"
@@ -55,7 +55,7 @@ const rowHasError = (errors: Record<string, string>, rowIndex: number) => {
                         :for="genProductName(index, 'price')"
                         value="Price"
                     />
-                    <TextInput
+                    <InputField
                         :id="genProductName(index, 'price')"
                         type="number"
                         class="mt-1 block w-full"
@@ -68,7 +68,7 @@ const rowHasError = (errors: Record<string, string>, rowIndex: number) => {
                         :for="genProductName(index, 'quantity')"
                         value="Quantity"
                     />
-                    <TextInput
+                    <InputField
                         :id="genProductName(index, 'quantity')"
                         type="number"
                         class="mt-1 block w-full"

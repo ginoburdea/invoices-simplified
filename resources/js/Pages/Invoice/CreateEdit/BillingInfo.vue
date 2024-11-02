@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
+import InputField from "@/Components/InputField.vue";
 
 const vendor = defineModel("vendor", { type: String, required: true });
 const customer = defineModel("customer", { type: String, required: true });
@@ -23,7 +23,7 @@ const useLastBillingInfo = () => {
         <div>
             <div class="mb-2">
                 <InputLabel for="vendor" value="Vendor" />
-                <TextInput
+                <InputField
                     id="vendor"
                     type="textarea"
                     class="mt-1 block w-full"
@@ -42,7 +42,7 @@ const useLastBillingInfo = () => {
         </div>
         <div>
             <InputLabel for="customer" value="Customer" />
-            <TextInput
+            <InputField
                 id="customer"
                 type="textarea"
                 class="mt-1 block w-full"
