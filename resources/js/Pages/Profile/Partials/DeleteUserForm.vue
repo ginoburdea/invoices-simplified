@@ -4,7 +4,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import InputField from '@/Components/InputField.vue';
 import { useForm } from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
 
@@ -77,7 +77,7 @@ const closeModal = () => {
                         class="sr-only"
                     />
 
-                    <TextInput
+                    <InputField
                         id="password"
                         ref="passwordInput"
                         v-model="form.password"

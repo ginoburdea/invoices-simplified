@@ -40,7 +40,7 @@ defineProps({
                 ></InvoicesPagination>
             </template>
 
-            <p class="text-center" v-else>No invoices found</p>
+            <p v-else>No invoices found</p>
         </div>
     </AuthenticatedLayout>
 </template>

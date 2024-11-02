@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { Invoice } from "@/types/index.js";
 import { Link } from "@inertiajs/vue3";
 
 interface Props {
-    invoices: Invoice[];
+    invoices: Omit<Invoice, "vendor">[];
 }
 
 defineProps<Props>();
