@@ -92,7 +92,7 @@ const submitFormFn = computed(() =>
             <div>
                 <h2 class="font-bold text-lg mb-2">Products</h2>
 
-                <div class="mb-4">
+                <div class="mb-6">
                     <Products
                         v-model="form.products"
                         :errors="form.errors"
