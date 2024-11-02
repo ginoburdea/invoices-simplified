@@ -67,3 +67,16 @@ In modul de dezvoltare, aplicatia se poate accesa prin adresa http://localhost:8
 ```sh
 php artisan route:list
 ```
+
+## Instructiuni de dezvoltare
+
+### Strategia de branching
+
+Acest proiect utilizeaza strategia [Feature Branch](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow):
+
+Exista un branch `main` unde se afla codul functional si gata de trimis spre productie si cate un branch pentru fiecare task / user story.
+
+1. Se creaza un branch pentru fiecare task
+1. Se implementeaza solutia
+1. Se deshide un Pull Request pe Github
+1. Dupa review, Pull Request-ul se inchide prin strategia "Squash and Merge"
