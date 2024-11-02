@@ -59,3 +59,11 @@ npm run dev
 # Genereaza un "build" pentru frontend si optimizeaza backend-ul
 npm run build
 ```
+
+### 6. Link-uri
+
+In modul de dezvoltare, aplicatia se poate accesa prin adresa http://localhost:8000. Linkurile aplicatiei se pot vedea folosind urmatoarea comanda:
+
+```sh
+php artisan route:list
+```
