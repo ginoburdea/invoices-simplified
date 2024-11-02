@@ -3,6 +3,7 @@ import XButton from "@/Components/XButton.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
+import { InvoiceProduct } from "@/types/index.js";
 
 const products = defineModel<InvoiceProduct[]>({ required: true });
 const emit = defineEmits(["addProduct"]);
@@ -56,7 +57,7 @@ const rowHasError = (errors: Record<string, string>, rowIndex: number) => {
                     />
                     <TextInput
                         :id="genProductName(index, 'price')"
-                        type="text"
+                        type="number"
                         class="mt-1 block w-full"
                         v-model="product.price"
                         required
@@ -69,7 +70,7 @@ const rowHasError = (errors: Record<string, string>, rowIndex: number) => {
                     />
                     <TextInput
                         :id="genProductName(index, 'quantity')"
-                        type="text"
+                        type="number"
                         class="mt-1 block w-full"
                         v-model="product.quantity"
                         required

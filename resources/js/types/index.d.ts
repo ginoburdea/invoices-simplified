@@ -16,6 +16,7 @@ export type PageProps<
 export interface Invoice {
     id: number;
     number: number;
+    vendor: string;
     customer: string;
     total: number;
 }
