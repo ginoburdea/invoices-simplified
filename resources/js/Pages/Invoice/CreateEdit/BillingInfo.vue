@@ -25,11 +25,10 @@ const useLastBillingInfo = () => {
                 <InputLabel for="vendor" value="Vendor" />
                 <TextInput
                     id="vendor"
-                    type="text"
+                    type="textarea"
                     class="mt-1 block w-full"
                     v-model="vendor"
                     required
-                    multiline
                 />
                 <InputError class="mt-2" :message="props.vendorError" />
             </div>
@@ -45,11 +44,10 @@ const useLastBillingInfo = () => {
             <InputLabel for="customer" value="Customer" />
             <TextInput
                 id="customer"
-                type="text"
+                type="textarea"
                 class="mt-1 block w-full"
                 v-model="customer"
                 required
-                multiline
             />
             <InputError class="mt-2" :message="props.customerError" />
         </div>
