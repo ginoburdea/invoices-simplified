@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\Product;
 use Fpdf\Fpdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -22,6 +23,115 @@ class InvoiceController extends Controller
         'products.*.price' => ['required', 'decimal:0,2', 'min:0.01', 'max:1000'],
         'products.*.quantity' => ['required', 'integer', 'min:1', 'max:1000'],
     ];
+
+    /**
+     * Display the stats / dashboard page
+     */
+    public function index_stats(Request $request)
+    {
+        Gate::authorize('index_stats', Invoice::class);
+
+        $data = $request->validate([
+            'time_frame' => ['sometimes', Rule::in(['last_3_days', 'last_7_days', 'last_14_days'])],
+            'group_by' => ['sometimes', Rule::in(['hour', 'day', 'week'])],
+        ]);
+
+        $default_data = [
+            'time_frame' => 'last_14_days',
+            'group_by' => 'day',
+        ];
+
+        $keys_exceptions = [];
+        $keys = ['time_frame', 'group_by'];
+
+        // If the data contains defaults, then add the default and redirect
+        $data_with_defaults = [];
+        foreach ($keys as $key) {
+            if (!isset($data[$key]) && in_array($key, $keys_exceptions)) {
+                continue;
+            }
+
+            $data_with_defaults[$key] = $data[$key] ?? $default_data[$key];
+        }
+        if ($data_with_defaults !== $data) {
+            return redirect()->to($request->fullUrlWithQuery($data_with_defaults));
+        }
+
+        // Initiate the SQL query
+        $invoices_sql_query = $request->user()->invoices();
+
+        // Add the date filters
+        $time_frames_to_days = [
+            'last_3_days' => 3,
+            'last_7_days' => 7,
+            'last_14_days' => 14,
+        ];
+        $days_to_subtract = $time_frames_to_days[$data['time_frame']];
+        $invoices_start_date = now()->subDays($days_to_subtract);
+
+        $invoices_sql_query->where('created_at', '>=', $invoices_start_date);
+
+        // Add the select statements and the group by statements (ignoring the value field)
+
+        // An object with the key being the the column name and the value being the sql value
+        // This will be transformed into a "SELECT ... AS ..." statement
+        $selected_columns = [
+            'value' => 'sum(total)',
+        ];
+
+        $columns_to_select = [
+            'week' => ['year', 'week'],
+            'day' => ['year', 'month', 'day'],
+            'hour' => ['year', 'month', 'day', 'hour'],
+        ];
+
+        foreach ($columns_to_select[$data['group_by']] as $column) {
+            $selected_columns["created_at_$column"] = "extract($column from created_at)";
+        }
+
+        foreach ($selected_columns as $column_name => $column_query) {
+            $invoices_sql_query->addSelect(Db::raw("$column_query as $column_name"));
+        }
+
+        $invoices_sql_query->groupBy(
+            array_diff(
+                array_keys($selected_columns),
+                ['value']
+            )
+        );
+
+        function invoice_to_sale($invoice, $group_by)
+        {
+            $start_date = match ($group_by) {
+                'week' => (new \DateTimeImmutable())->setISODate($invoice['created_at_year'], $invoice['created_at_week']),
+                'day' => (new \DateTimeImmutable())->setDate($invoice['created_at_year'], $invoice['created_at_month'], $invoice['created_at_day']),
+                'hour' => (new \DateTimeImmutable())->setDate($invoice['created_at_year'], $invoice['created_at_month'], $invoice['created_at_day'])->setTime($invoice['created_at_hour'], 0),
+            };
+
+            $end_date = $start_date->modify("+1 $group_by");
+
+            return [
+                'start_date' => $start_date->format(\Datetime::ATOM),
+                'end_date' => $end_date->format(\Datetime::ATOM),
+                'value' => $invoice['value'],
+            ];
+        };
+
+        // Get the invoices and format them
+        // The output array will have 3 keys:
+        // - start_date (iso date string)
+        // - end_date (iso date string)
+        // - value (float number)
+        $invoices = $invoices_sql_query->get();
+        $formatted_invoices = array_map(
+            fn($invoice) => invoice_to_sale($invoice, $data['group_by']),
+            $invoices->toArray()
+        );
+
+        return Inertia::render('Dashboard', [
+            'sales' => $formatted_invoices,
+        ]);
+    }
 
     /**
      * Display a listing of the resource.
@@ -158,7 +268,8 @@ class InvoiceController extends Controller
         return $total;
     }
 
-    private function add_products_to_invoice(Invoice $invoice, $products) {
+    private function add_products_to_invoice(Invoice $invoice, $products)
+    {
         $invoice->products()->createMany($products);
         $invoice['total'] = $this->calculateInvoiceTotal($invoice['id']);
         $invoice->save();
@@ -378,7 +489,7 @@ class InvoiceController extends Controller
 
         $data = $request->validate($this->invoice_validators);
 
-        foreach(['vendor', 'customer'] as $invoice_field) {
+        foreach (['vendor', 'customer'] as $invoice_field) {
             $invoice[$invoice_field] = $data[$invoice_field];
         }
         $invoice->save();
