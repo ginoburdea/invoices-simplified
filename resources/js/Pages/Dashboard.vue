@@ -194,7 +194,12 @@ const chartValues = computed(() => props.sales.map((sale) => sale.value));
                 </div>
             </div>
 
+            <p v-if="sales.length === 0">
+                There are no sales in the selected time frame
+            </p>
+
             <LineChart
+                v-else
                 :data="{
                     labels: chartLabels,
                     datasets: [{ data: chartValues }],
