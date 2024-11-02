@@ -15,6 +15,7 @@ import {
     LineController,
     LineElement,
     PointElement,
+    Tooltip,
 } from "chart.js";
 import { computed } from "vue";
 import dayjs from "dayjs";
@@ -24,7 +25,8 @@ ChartJS.register(
     LinearScale,
     LineController,
     LineElement,
-    PointElement
+    PointElement,
+    Tooltip
 );
 
 interface Props {
